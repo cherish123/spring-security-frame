@@ -1,0 +1,70 @@
+server:
+  port: 8091
+  #对tomcat进行了一个优化配置
+  tomcat:
+    min-spare-threads: 20
+    max-threads: 100
+    max-connections: 5000
+
+#mapper别名配置
+mybatis:
+  type-aliases-package: com.cus.dto
+  #配置mabatis的执行sql输出
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+spring:
+#  security:
+#    user:
+#      name: user
+#      password: user
+
+
+  redis:
+    host: 172.22.128.81
+    port: 6379
+    jedis:
+      pool:
+        max-active: 30
+        min-idle: 10
+        max-wait: -1
+    database: 0
+    password:
+    timeout: 5000
+
+cus:
+  security:
+    browser:
+#      loginPage: /demo-signIn.html
+#      loginResponseType: REDIRECT
+      signUpUrl: /demo-signUp.html
+      signOutUrl: /demo-logout.html
+    code:
+      image:
+        width: 100
+        height: 50
+        length: 4
+#        url: /hello
+      sms:
+        length: 6
+#    loginType: SMS_CODE
+
+    social:
+      qq:
+        app-id: 100550231
+        app-secret: 69b6ab57b22f3c2fe6a6149274e3295e
+        providerId: callback.do
+      filterProcessesUrl: /qqLogin
+      weixin:
+        app-id: wxd99431bbff8305a0
+        app-secret: 60f78681d063590a469f1b297feff3c4
+security:
+  oauth2:
+    client:
+      client-id: cus
+      client-secret: cus
+#logging:
+#  level:
+#    org.springframework.security: debug
+
+#debug: true
