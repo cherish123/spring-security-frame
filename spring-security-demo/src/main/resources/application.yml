@@ -19,9 +19,8 @@ spring:
 #      name: user
 #      password: user
 
-
   redis:
-    host: 172.22.128.81
+    host: 127.0.0.1
     port: 6379
     jedis:
       pool:

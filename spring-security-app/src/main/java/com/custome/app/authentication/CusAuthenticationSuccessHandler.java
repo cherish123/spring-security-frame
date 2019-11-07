@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.UnapprovedClientAuthenticationException;
 import org.springframework.security.oauth2.provider.*;
@@ -38,6 +39,9 @@ public class CusAuthenticationSuccessHandler extends SavedRequestAwareAuthentica
     @Autowired
     private AuthorizationServerTokenServices authorizationServerTokenServices;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
@@ -60,7 +64,7 @@ public class CusAuthenticationSuccessHandler extends SavedRequestAwareAuthentica
         if (clientDetails == null) {
             throw new UnapprovedClientAuthenticationException("clientId对应的配置信息不存在: " + clientId);
         }
-        else if (!StringUtils.equals(clientDetails.getClientSecret(),clientSecret)) {
+        else if (!passwordEncoder.matches(clientSecret,(clientDetails.getClientSecret()))) {
             throw new UnapprovedClientAuthenticationException("clientSecret不匹配： " + clientSecret);
         }
 

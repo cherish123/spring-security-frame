@@ -1,5 +1,7 @@
 package com.custome.app.config;
 
+import com.custome.security.core.properties.SecurityConstants;
+import com.custome.security.core.properties.SecurityProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -24,11 +26,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired()@Qualifier("pwdUserDetailsService")
     private UserDetailsService pwdDetailsService;
 //
-//    @Autowired
-//    private AuthenticationSuccessHandler cusAuthenticationSuccessHandler;
-//
-//    @Autowired
-//    private AuthenticationFailureHandler cusAuthenticationFailureHandler;
+    @Autowired
+    private AuthenticationSuccessHandler cusAuthenticationSuccessHandler;
+
+    @Autowired
+    private AuthenticationFailureHandler cusAuthenticationFailureHandler;
+
+    @Autowired
+    private SecurityProperties securityProperties;
 //
 //
 //    @Override
@@ -41,11 +46,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //        super.configure(web);
 //    }
 
-//    @Bean
-//    @Override
-//    public AuthenticationManager authenticationManagerBean() throws Exception {
-//        return super.authenticationManagerBean();
-//    }
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
     /**
      * 用来配置拦截保护的请求
@@ -59,15 +64,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //不拦截 oauth 开放的资源
         http.csrf().disable();
         http.formLogin()
+//                .loginPage(SecurityConstants.DEFAULT_UNAUTHENTICATION_URL)
+//                .loginProcessingUrl(SecurityConstants.DEFAULT_LOGIN_PROCESSING_URL_FORM)
+//                .successHandler(cusAuthenticationSuccessHandler)
+//                .failureHandler(cusAuthenticationFailureHandler)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/oauth/**","/login/**","/logout/**").permitAll()
+                .antMatchers(//SecurityConstants.DEFAULT_UNAUTHENTICATION_URL,
+                        //SecurityConstants.DEFAULT_LOGIN_PROCESSING_URL_FORM,
+                        "/oauth/**","/login/**","/logout/**").permitAll()
                 .anyRequest().authenticated(); //新增login form支持用户登录及授权
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(pwdDetailsService);
-//        auth.parentAuthenticationManager(authenticationManagerBean());
     }
 }

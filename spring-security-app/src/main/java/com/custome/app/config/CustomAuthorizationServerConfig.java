@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
 import java.util.HashMap;
@@ -31,12 +32,14 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-//    @Autowired
-//    private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 //
-//    @Autowired()@Qualifier("pwdUserDetailsService")
-//    private UserDetailsService pwdDetailsService;
+    @Autowired()@Qualifier("pwdUserDetailsService")
+    private UserDetailsService pwdDetailsService;
 
+    @Autowired
+    private TokenStore tokenStore;
 
     @Autowired
     private Environment env;
@@ -46,10 +49,13 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()             // 使用in-memory存储客户端信息
                 .withClient(env.getProperty("security.oauth2.client.client-id"))       // client_id
-//                .secret(env.getProperty("security.oauth2.client.client-secret"))
-                .secret(passwordEncoder.encode(env.getProperty("security.oauth2.client.client-secret")))
+//                .secret(env.getProperty("security.oauth2.client.client-secret"))   //自定义用户名密码登录方式   successhandle中需要
+                .secret(passwordEncoder.encode(env.getProperty("security.oauth2.client.client-secret"))) // 默认拿code换取token这一步需要
                 .redirectUris("http://example.com")
-                .authorizedGrantTypes("password", "refresh_token","authorization_code");
+                .refreshTokenValiditySeconds(7200)
+                .accessTokenValiditySeconds(3600)
+                .authorizedGrantTypes("password", "refresh_token","authorization_code")
+                .scopes("app","all","read","write");
     }
 
 //    @Override
@@ -57,13 +63,16 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
 //        security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()");
 //    }
 
-//    @Override
-//    public void configure(final AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-//
-//        endpoints.authenticationManager(authenticationManager).userDetailsService(pwdDetailsService);
+    @Override
+    public void configure(final AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+
+        endpoints
+                .tokenStore(tokenStore)
+                .authenticationManager(authenticationManager)
+                .userDetailsService(pwdDetailsService);
 //                .accessTokenConverter(accessTokenConverter())
 //                .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST); //支持GET  POST  请求获取token;
-//    }
+    }
 
 //    @Bean
 //    public JwtAccessTokenConverter accessTokenConverter() {
