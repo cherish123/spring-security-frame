@@ -2,6 +2,8 @@ package com.custome.app.config;
 
 import com.custome.security.core.properties.SecurityConstants;
 import com.custome.security.core.properties.SecurityProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -18,10 +20,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
-//@Order(10)
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
 
     @Autowired()@Qualifier("pwdUserDetailsService")
     private UserDetailsService pwdDetailsService;
@@ -41,10 +44,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //        super.init(web);
 //    }
 
-//    @Override
-//    public void configure(WebSecurity web) throws Exception {
-//        super.configure(web);
-//    }
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        super.configure(web);
+        web.ignoring().antMatchers("/favicon.ico");
+    }
 
     @Bean
     @Override
@@ -60,6 +64,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+        logger.info("WebSecurityConfig中配置HttpSecurity对象执行");
 
         //不拦截 oauth 开放的资源
         http.csrf().disable();

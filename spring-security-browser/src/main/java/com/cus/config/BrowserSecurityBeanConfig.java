@@ -1,7 +1,6 @@
 package com.cus.config;
 
 
-import com.cus.browser.logout.ChenLogoutSuccessHandler;
 import com.custome.security.core.properties.SecurityProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -22,6 +21,6 @@ public class BrowserSecurityBeanConfig {
     @Bean
     @ConditionalOnMissingBean(LogoutSuccessHandler.class)
     public LogoutSuccessHandler logoutSuccessHandler() {
-        return new ChenLogoutSuccessHandler(securityProperties.getBrowser().getSignOutUrl());
+        return new com.cus.browser.logout.CusLogoutSuccessHandler(securityProperties.getBrowser().getSignOutUrl());
     }
 }

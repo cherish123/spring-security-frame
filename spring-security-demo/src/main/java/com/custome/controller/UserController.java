@@ -42,6 +42,11 @@ public class UserController {
 		return user;
 	}
 
+	@GetMapping("/resource")
+	public String phone() {
+		return "resource";
+	}
+
 	@PostMapping
 	public User create(@Valid @RequestBody User user) {
 
