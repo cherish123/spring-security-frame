@@ -18,10 +18,14 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Configuration
@@ -35,8 +39,17 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired()@Qualifier("pwdUserDetailsService")
+    private UserDetailsService pwdDetailsService;
+
     @Autowired
     private TokenStore tokenStore;
+
+    @Autowired(required = false)
+    private JwtAccessTokenConverter jwtAccessTokenConverter;
+
+    @Autowired(required = false)
+    private TokenEnhancer tokenEnhancer;
 
     @Autowired
     private Environment env;
@@ -79,22 +92,17 @@ public class CustomAuthorizationServerConfig extends AuthorizationServerConfigur
 
         endpoints
                 .tokenStore(tokenStore)
-                .authenticationManager(authenticationManager);
-    }
+                .authenticationManager(authenticationManager)
+                .userDetailsService(pwdDetailsService);//需要显示指定userDetailsService，否则refresh_token报错
 
-//    @Bean
-//    public JwtAccessTokenConverter accessTokenConverter() {
-//        JwtAccessTokenConverter converter = new JwtAccessTokenConverter() {
-//            @Override
-//            public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
-//                String userName = authentication.getUserAuthentication().getName();
-//                final Map<String, Object> additionalInformation = new HashMap<String, Object>();
-//                additionalInformation.put("user_name", userName);
-//                ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInformation);
-//                OAuth2AccessToken token = super.enhance(accessToken, authentication);
-//                return token;
-//            }
-//        };
-//        return converter;
-//    }
+        if(jwtAccessTokenConverter != null && tokenEnhancer != null) {
+            TokenEnhancerChain enhancerChain = new TokenEnhancerChain();
+            List<TokenEnhancer> enhancerList = new ArrayList<TokenEnhancer>();
+            enhancerList.add(tokenEnhancer);
+            enhancerList.add(jwtAccessTokenConverter);
+            enhancerChain.setTokenEnhancers(enhancerList);
+
+            endpoints.tokenEnhancer(enhancerChain).accessTokenConverter(jwtAccessTokenConverter);
+        }
+    }
 }

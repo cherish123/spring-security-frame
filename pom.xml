@@ -43,6 +43,7 @@
         <spring-social-web.version>1.1.6.RELEASE</spring-social-web.version>
         <spring-boot-autoconfigure.version>2.1.0.RELEASE</spring-boot-autoconfigure.version>
         <javax.persistence-api.version>2.2</javax.persistence-api.version>
+        <jjwt.version>0.9.0</jjwt.version>
     </properties>
 
 
@@ -179,6 +180,13 @@
                 <artifactId>javax.persistence-api</artifactId>
                 <version>${javax.persistence-api.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+
         </dependencies>
 
     </dependencyManagement>

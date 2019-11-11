@@ -47,6 +47,16 @@
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc6</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

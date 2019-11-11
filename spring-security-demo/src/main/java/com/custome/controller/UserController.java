@@ -2,7 +2,12 @@ package com.custome.controller;
 
 import com.custome.dto.User;
 import com.custome.service.UserService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.social.connect.web.ProviderSignInUtils;
@@ -12,7 +17,9 @@ import org.springframework.web.context.request.ServletWebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -38,7 +45,14 @@ public class UserController {
 	}
 
 	@GetMapping("/me")
-	public Object getCurrentUser(@AuthenticationPrincipal UserDetails user) {
+	public Object getCurrentUser(Authentication user,HttpServletRequest request) throws Exception {
+//		@AuthenticationPrincipal UserDetails user
+
+		String token = StringUtils.substringAfter(request.getHeader("Authorization"), "bearer ");
+		Claims claims = Jwts.parser().setSigningKey("cus".getBytes("UTF-8"))
+					.parseClaimsJws(token).getBody();
+		String company = (String) claims.get("company");
+		log.info("---------->"+company);
 		return user;
 	}
 
