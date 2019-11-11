@@ -72,7 +72,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.formLogin()
 //                .loginPage(SecurityConstants.DEFAULT_UNAUTHENTICATION_URL)
 //                .loginProcessingUrl(SecurityConstants.DEFAULT_LOGIN_PROCESSING_URL_FORM)
-//                .successHandler(cusAuthenticationSuccessHandler)
+                .successHandler(cusAuthenticationSuccessHandler)
 //                .failureHandler(cusAuthenticationFailureHandler)
                 .and()
                 .authorizeRequests()
